@@ -8,6 +8,7 @@ ThisBuild / scalaVersion     := "2.13.6"
 
 lazy val protos = project
   .in(file("protos"))
+  .disablePlugins(TpolecatPlugin) // this module cannot cope with scalac options from sbt-tpolecat
   .settings(
     Compile / PB.targets      := Seq(
       scalapb.gen(grpc = true)          -> (Compile / sourceManaged).value,
@@ -15,6 +16,11 @@ lazy val protos = project
     ),
     Compile / PB.protoSources := Seq(
       (ThisBuild / baseDirectory).value / "protos" / "src" / "main" / "protobuf"
+    )
+  )
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.thesamet.scalapb" %%% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion
     )
   )
 
